@@ -66,16 +66,17 @@ var svg = d3.select("body").append("svg")
     .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
 
 var axisscale = d3.scale.linear()
-    .domain([0,13])
+    .domain([0,14])
     .range([0,360]);
 var anglescale = d3.scale.linear()
     .domain([0,13])
     .range([0,2*Math.PI]);
+
 svg.selectAll(".axis")
-    .data(d3.range(13))
+    .data(d3.range(14))
   .enter().append("line")
     .attr("class", "axis")
-    .attr("transform", function(d) { return "rotate(" + axisscale(d) + ")"; })
+    .attr("transform", function(d) { return "rotate(" + degrees(angle(d)) + ")"; })
     .attr("x1", radius.range()[0])
     .attr("x2", radius.range()[1]);
 
@@ -92,7 +93,7 @@ svg.selectAll(".node")
     .data(nodes)
   .enter().append("circle")
     .attr("class", "node")
-    .attr("transform", function(d) { return "rotate(" + axisscale(d.x) + ")"; })
+    .attr("transform", function(d) { return "rotate(" + degrees(angle(d.x)) + ")"; })
     .attr("cx", function(d) { return radius(d.y); })
     .attr("r", 5)
     .style("fill", function(d) { return color(d.x); })
