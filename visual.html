@@ -19,41 +19,75 @@
     f = document.getElementById("catDiv").firstChild;
 
     if (f === null) {
+      d3.select("body").transition()
+        .style("background-color", "black");
       catAttack();
     };
 
     if (f !== null) {
-      console.log(f);
+      d3.select("body").transition()
+        .style("background-color", "white");
       byeCat();
     };
 
   };
   function catAttack() {
+    paw = document.createElement("img");
+    paw.src = "paw.png";
     cat = document.createElement("img");
     cat.src = "cat.png";
     toApp = document.getElementById("catDiv");
     toApp.appendChild(cat);
+    toApp = document.getElementById("pawDiv");
+    toApp.appendChild(paw);
   };
   function byeCat() {
     while (document.getElementById("catDiv").firstChild) {
         document.getElementById("catDiv").removeChild(document.getElementById("catDiv").firstChild);
     }
+    while (document.getElementById("pawDiv").firstChild) {
+        document.getElementById("pawDiv").removeChild(document.getElementById("pawDiv").firstChild);
+    }
   }
+
+  document.addEventListener('mousemove', function(e){ 
+      var rot = (e.clientY + e.clientX)/2;
+      if (rot < 315) {
+        rot = 315
+      };
+      if (rot > 420) {
+        rot = 420
+      };
+
+      arm = document.getElementById("pawDiv")
+      arm.style.cssText = "pointer-events: none; position: absolute; z-index: 45; left: 43%; top: 36%; margin-top: 10px; margin-left: -50px; text-align: right; transform: rotate(" + -rot + "deg);"
+
+  }, false);
+
 </script>
 
 <body>
 
   <div>
-    <button onclick="toggleCat()">Toggle Cat Attack</button>
+
+    <dl id="info" style="padding-top: 30px; height: 100px; position:absolute; color: red"></dl>
+
+    <button onclick="toggleCat()">Toggle Cat</button>   <a href="http://catsplaincitibike.neocities.org/visual.html">...or check out full data set!</a>
   </div>
-<dl id="info" style="height: 100px; position:absolute"></dl>
+
+  <div id="pawDiv">
+  </div>
 
   <div
     id="catDiv"
     style=" position:absolute; 
-      left:50%; 
+      z-index: 85;
+      left: 55%; 
+      top: 20%;
+      margin-top: 10px;
       margin-left:-50px;
-      text-align:center;">
+      text-align:right;
+      pointer-events: none;">
   </div>
 
 </body>
@@ -198,9 +232,11 @@ svg.selectAll(".endstation")
               }
               return color(dl.source.bikeid);
             }
+
         while(document.getElementById("info").firstChild){
           document.getElementById("info").removeChild(document.getElementById("info").firstChild);
-        };
+          };
+
         document.getElementById("info").innerHTML="Bike "+ d.bikeid +" went to these stations!"
         });
 
