@@ -198,11 +198,12 @@ svg.selectAll(".endstation")
               }
               return color(dl.source.bikeid);
             }
-
-        });
         while(document.getElementById("info").firstChild){
           document.getElementById("info").removeChild(document.getElementById("info").firstChild);
-        }
+        };
+        document.getElementById("info").innerHTML="Bike "+ d.bikeid +" went to these stations!"
+        });
+
         for (index in infoStations){
           var phrase=infoStations[index];
           var f = document.createElement("dt");
