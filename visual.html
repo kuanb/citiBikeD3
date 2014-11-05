@@ -24,7 +24,7 @@ var width = 960,
     outerRadius = 240;
 
 var angle = d3.scale.ordinal().domain(d3.range(14)).rangePoints([0, 2 * Math.PI]),
-    radius = d3.scale.linear().domain([0,14]).range([innerRadius, outerRadius]),
+    radius = d3.scale.linear().domain([14529,21689]).range([innerRadius, outerRadius]),
     color = d3.scale.category10().domain(d3.range(20));
 
  var stations_axes={
@@ -44,9 +44,6 @@ var angle = d3.scale.ordinal().domain(d3.range(14)).rangePoints([0, 2 * Math.PI]
 }
  ;
 function map_stations_axes(station){
-  console.log(station);
-  console.log(stations_axes)
-  console.log(stations_axes[station]);
   return stations_axes[station];}
 
 var nodes;
@@ -112,17 +109,15 @@ svg.selectAll(".axis")
 //     .style("stroke", function(d) { return color(d.source.x); })
 
 d3.csv("cleanbike_short.csv", function(data){
-  for (k in stations_axes)
-    {console.log(k)};
   nodes=data;
   svg.selectAll(".node")
     .data(nodes)
   .enter().append("circle")
     .attr("class", "node")
-    .attr("transform", function(d) { return "rotate(" + degrees(angle(map_stations_axes(d.startstationid))) + ")"; })
-    .attr("cx", function(d) { return radius(d.startstationid); })
+    .attr("transform", function(d) { console.log(degrees(angle(map_stations_axes(d.startstationid)))); return "rotate(" + degrees(angle(map_stations_axes(d.startstationid))) + ")"; })
+    .attr("cx", function(d) { console.log(radius(d.bikeid)); ;return radius(d.bikeid); })
     .attr("r", 5)
-    .style("fill", function(d) { return color(d.startstationid); })
+    .style("fill", function(d) { return color(d.bikeid); })
 });
 
 function degrees(radians) {
