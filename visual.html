@@ -143,30 +143,6 @@ d3.csv("cleanbike_short.csv", function(data){
     svg.selectAll(".link")
     .data(links)
     .enter().append("path")
-    .on("mouseover", function(d) {
-        d3.select(this)
-            .transition()
-            .duration(150)
-            .style("stroke-width", 3)
-            .style("stroke", "#ff0000")
-        d3.selectAll(".link")
-            .data(links)
-            .style("stroke-width", function (dl) {
-                if(dl.source == d){
-                    return 5;
-                }else if(dl.target == d){
-                    return 5;
-                }
-        });
-    })
-    .on("mouseout", function(){
-        d3.select(this)
-            .style("stroke-width", 1)
-            .style("stroke", "#d3d3d3")
-        d3.selectAll(".link")
-            .style("stroke-width", 1)
-            .style("stroke", "#d3d3d3")
-    })
     .attr("class", "link")
     .attr("d", d3.hive.link()
     .angle(function(d) { return (angle(stations_axes[d.startstationid])); })   // angle(d.x)
@@ -183,6 +159,29 @@ d3.csv("cleanbike_short.csv", function(data){
     .attr("cx", function(d) { return radius(d.bikeid); })
     .attr("r", 5)
     .style("fill", function(d) { return color(d.bikeid); })
+    .on("click", function(d) {
+        d3.select(this)
+            .transition()
+            .duration(150)
+            .style("stroke", "#ff0000")
+        d3.selectAll(".link")
+            .data(links)
+            .style("stroke-width", function (dl) {
+                if(dl.source.bikeid == d.bikeid){
+                    return 3;
+                }else if(dl.target.bikeid == d.bikeid){
+                    return 3;
+                }
+            })
+            .style("stroke", function(dl){
+              if (dl.source.bikeid == d.bikeid){
+              return color(dl.source.bikeid);
+            }
+            else if (dl.target.bikeid == d.bikeid){
+              return color(dl.source.bikeid);
+            }
+        });
+    })
 
 });
 
