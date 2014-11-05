@@ -13,9 +13,53 @@
 }
 
 </style>
+
+<script type="text/javascript">
+  function toggleCat() {
+    f = document.getElementById("catDiv").firstChild;
+
+    if (f === null) {
+      catAttack();
+    };
+
+    if (f !== null) {
+      console.log(f);
+      byeCat();
+    };
+
+  };
+  function catAttack() {
+    cat = document.createElement("img");
+    cat.src = "cat.png";
+    toApp = document.getElementById("catDiv");
+    toApp.appendChild(cat);
+  };
+  function byeCat() {
+    while (document.getElementById("catDiv").firstChild) {
+        document.getElementById("catDiv").removeChild(document.getElementById("catDiv").firstChild);
+    }
+  }
+</script>
+
 <body>
+
+  <div>
+    <button onclick="toggleCat()">Toggle Cat Attack</button>
+  </div>
+
+  <div
+    id="catDiv"
+    style=" position:absolute; 
+      left:50%; 
+      margin-left:-50px;
+      text-align:center;">
+  </div>
+
+</body>
+
 <script src="http://d3js.org/d3.v3.min.js"></script>
 <script src="http://d3js.org/d3.hive.v0.min.js"></script>
+
 <script>
 
 var width = 960,
@@ -90,11 +134,47 @@ svg.selectAll(".axis")
 //    .radius(function(d) { return radius(d.y); }))
 //     .style("stroke", function(d) { return color(d.source.x); })
 
-d3.csv("cleanBike.csv", function(data){
+d3.csv("cleanbike_short.csv", function(data){
   nodes=data;
   for (index in data){
     links.push({source:{startstationid: data[index].startstationid, bikeid:data[index].bikeid}, target:{startstationid:data[index].endstationid, bikeid:data[index].bikeid}});
   };
+
+    svg.selectAll(".link")
+    .data(links)
+    .enter().append("path")
+    .on("mouseover", function(d) {
+        d3.select(this)
+            .transition()
+            .duration(150)
+            .style("stroke-width", 3)
+            .style("stroke", "#ff0000")
+        d3.selectAll(".link")
+            .data(links)
+            .style("stroke-width", function (dl) {
+                if(dl.source == d){
+                    return 5;
+                }else if(dl.target == d){
+                    return 5;
+                }
+        });
+    })
+    .on("mouseout", function(){
+        d3.select(this)
+            .style("stroke-width", 1)
+            .style("stroke", "#d3d3d3")
+        d3.selectAll(".link")
+            .style("stroke-width", 1)
+            .style("stroke", "#d3d3d3")
+    })
+    .attr("class", "link")
+    .attr("d", d3.hive.link()
+    .angle(function(d) { return (angle(stations_axes[d.startstationid])); })   // angle(d.x)
+  .radius(function(d) { return radius(d.bikeid); }))
+    .style("stroke", "#d3d3d3")
+    .style("stroke-width", 0)
+    .style("stroke-opacity", .5)
+
   svg.selectAll(".node")
     .data(nodes)
   .enter().append("circle")
@@ -104,19 +184,12 @@ d3.csv("cleanBike.csv", function(data){
     .attr("r", 5)
     .style("fill", function(d) { return color(d.bikeid); })
 
-    svg.selectAll(".link")
-    .data(links)
-    .enter().append("path")
-    .attr("class", "link")
-    .attr("d", d3.hive.link()
-    .angle(function(d) {console.log(angle(stations_axes[d.startstationid])); return (angle(stations_axes[d.startstationid])); })   // angle(d.x)
-   .radius(function(d) { return radius(d.bikeid); }))
-    .style("stroke", function(d) { return color(d.source.bikeid); })
-
 });
 
 function degrees(radians) {
   return radians / Math.PI * 180 - 90;
 }
+
+byeCat()
 
 </script>
