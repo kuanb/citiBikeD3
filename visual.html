@@ -27,22 +27,25 @@ var angle = d3.scale.ordinal().domain(d3.range(14)).rangePoints([0, 2 * Math.PI]
     radius = d3.scale.linear().domain([0,14]).range([innerRadius, outerRadius]),
     color = d3.scale.category10().domain(d3.range(20));
 
- var stations_axes=[
- {"1":"151"},
- {"2":"285"},
- {"3":"293"},
- {4:327},
- {5:358},
- {6:382},
- {7:402},
- {8:426},
- {9:435},
- {497:10},
- {499:11},
- {519:12},
- {521:13}]
+ var stations_axes={
+ 151:1,
+ 285:2,
+ 293:3,
+ 327:4,
+ 358:5,
+ 382:6,
+ 402:7,
+ 426:8,
+ 435:9,
+ 497:10,
+ 499:11,
+ 519:12,
+ 521:13
+}
  ;
 function map_stations_axes(station){
+  console.log(station);
+  console.log(stations_axes)
   console.log(stations_axes[station]);
   return stations_axes[station];}
 
@@ -108,13 +111,15 @@ svg.selectAll(".axis")
 //    .radius(function(d) { return radius(d.y); }))
 //     .style("stroke", function(d) { return color(d.source.x); })
 
-d3.csv("cleanBike.csv", function(data){
+d3.csv("cleanbike_short.csv", function(data){
+  for (k in stations_axes)
+    {console.log(k)};
   nodes=data;
   svg.selectAll(".node")
     .data(nodes)
   .enter().append("circle")
     .attr("class", "node")
-    .attr("transform", function(d) {  console.log("calling map"+d), return "rotate(" + degrees(angle(map_stations_axes(d.startstationid))) + ")"; })
+    .attr("transform", function(d) { return "rotate(" + degrees(angle(map_stations_axes(d.startstationid))) + ")"; })
     .attr("cx", function(d) { return radius(d.startstationid); })
     .attr("r", 5)
     .style("fill", function(d) { return color(d.startstationid); })
