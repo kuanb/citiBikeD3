@@ -7,7 +7,7 @@
   stroke-width: 1.5px;
 }
 
-.axis, .node {
+.axis, .startstation, .endstation{
   stroke: #000;
   stroke-width: 1.5px;
 }
@@ -46,7 +46,7 @@
   <div>
     <button onclick="toggleCat()">Toggle Cat Attack</button>
   </div>
-
+<p id="info"></p>
   <div
     id="catDiv"
     style=" position:absolute; 
@@ -64,8 +64,8 @@
 
 var width = 960,
     height = 500,
-    innerRadius = 40,
-    outerRadius = 240;
+    innerRadius = 10,
+    outerRadius = 300;
 
 var angle = d3.scale.ordinal().domain(d3.range(13)).rangePoints([0, 2 * Math.PI]),
     radius = d3.scale.linear().domain([14520,21691]).range([innerRadius, outerRadius]),
@@ -87,6 +87,8 @@ var angle = d3.scale.ordinal().domain(d3.range(13)).rangePoints([0, 2 * Math.PI]
  521:12
 }
  ;
+ var info = d3.select("#info")
+      .text(defaultInfo = "Showing citibike rides from August 2014, to and from the 13 most popular stations");
 
 var nodes;
 //   {x: 0, y: .1},
@@ -103,7 +105,7 @@ var nodes;
 //   {x: 5, y: .2}
 // ];
 var links=[];
-
+var infoStations=[];
 var svg = d3.select("body").append("svg")
     .attr("width", width)
     .attr("height", height)
@@ -147,23 +149,37 @@ d3.csv("cleanbike_short.csv", function(data){
     .attr("d", d3.hive.link()
     .angle(function(d) { return (angle(stations_axes[d.startstationid])); })   // angle(d.x)
   .radius(function(d) { return radius(d.bikeid); }))
-    .style("stroke", "#d3d3d3")
+
     .style("stroke-width", 0)
     .style("stroke-opacity", .5)
 
-  svg.selectAll(".node")
+svg.selectAll(".endstation")
+    .data(nodes)
+  .enter().append("rect")
+    .attr("class", "endstation")
+    .attr("transform", function(d) {  return "rotate(" + degrees(angle(stations_axes[d.endstationid])) + ")"; })
+    .attr("x", function(d) { return radius(d.bikeid)-3; })
+    .attr("width", 5)
+    .attr("height", 5)
+    .attr("y", -2.5)
+    .style("fill", function(d) { return color(d.bikeid); })
+
+
+
+  svg.selectAll(".startstation")
     .data(nodes)
   .enter().append("circle")
-    .attr("class", "node")
+    .attr("class", "startstation")
     .attr("transform", function(d) {  return "rotate(" + degrees(angle(stations_axes[d.startstationid])) + ")"; })
     .attr("cx", function(d) { return radius(d.bikeid); })
-    .attr("r", 5)
+    .attr("r", 3)
     .style("fill", function(d) { return color(d.bikeid); })
+    .style("stroke-width", 1)
     .on("click", function(d) {
+      infoStations=[]
         d3.select(this)
             .transition()
             .duration(150)
-            .style("stroke", "#ff0000")
         d3.selectAll(".link")
             .data(links)
             .style("stroke-width", function (dl) {
@@ -175,12 +191,17 @@ d3.csv("cleanbike_short.csv", function(data){
             })
             .style("stroke", function(dl){
               if (dl.source.bikeid == d.bikeid){
+                if (infoStations.indexOf(dl.source.startstationid) <= -1){
+                  console.log("hi!")
+                  infoStations.push(dl.source.startstationid);}
+                if (infoStations.indexOf(dl.target.startstationid) <= -1){
+                infoStations.push(dl.target.startstationid);
+              }
               return color(dl.source.bikeid);
             }
-            else if (dl.target.bikeid == d.bikeid){
-              return color(dl.source.bikeid);
-            }
+
         });
+        info.text(infoStations.join("\n"));
     })
 
 });
