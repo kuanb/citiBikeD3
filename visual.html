@@ -60,23 +60,7 @@ var nodes;
 //   {x: 4, y: .5},
 //   {x: 5, y: .2}
 // ];
-
-// var links = [
-//   {source: nodes[0], target: nodes[2]},
-//   // {source: nodes[0], target: {x: 3, y: .3}},
-//   // {source: {x: 2, y: .1}, target: {x: 0, y: .1}},
-//   {source: nodes[1], target: nodes[3]},
-//   {source: nodes[2], target: nodes[4]},
-//   {source: nodes[3], target: nodes[5]},
-//   {source: nodes[4], target: nodes[5]},
-//   {source: nodes[5], target: nodes[0]},
-//   {source: nodes[6], target: nodes[1]},
-//   {source: nodes[7], target: nodes[1]},
-//   {source: nodes[8], target: nodes[1]},
-//   {source: nodes[9], target: nodes[1]},
-//   {source: nodes[10], target: nodes[1]},
-//   {source: nodes[2], target: nodes[1]}
-// ];
+var links=[];
 
 var svg = d3.select("body").append("svg")
     .attr("width", width)
@@ -114,12 +98,29 @@ d3.csv("cleanbike_short.csv", function(data){
     .data(nodes)
   .enter().append("circle")
     .attr("class", "node")
-    .attr("transform", function(d) { console.log(degrees(angle(map_stations_axes(d.startstationid)))); return "rotate(" + degrees(angle(map_stations_axes(d.startstationid))) + ")"; })
-    .attr("cx", function(d) { console.log(radius(d.bikeid)); ;return radius(d.bikeid); })
+    .attr("transform", function(d) {  return "rotate(" + degrees(angle(map_stations_axes(d.startstationid))) + ")"; })
+    .attr("cx", function(d) { return radius(d.bikeid); })
     .attr("r", 5)
     .style("fill", function(d) { return color(d.bikeid); })
-});
 
+});
+d3.csv("cleanbike_short.csv", function(data){
+  console.log(data);
+  for (index in data){
+    links.push({source:data[index].startstationid, target:data[index].endstationid});
+  };
+ console.log(links) 
+
+    svg.selectAll(".link")
+    .data(links)
+    .enter().append("path")
+    .attr("class", "link")
+    .attr("d", d3.hive.link()
+    .angle(function(d) {console.log(stations_axes[d]); return (angle(map_stations_axes[d])); })   // angle(d.x)
+   .radius(function(d) { return radius(d.bikeid); }))
+    .style("stroke", function(d) { return color(d.source.x); })
+
+});
 function degrees(radians) {
   return radians / Math.PI * 180 - 90;
 }
