@@ -46,7 +46,8 @@
   <div>
     <button onclick="toggleCat()">Toggle Cat Attack</button>
   </div>
-<p id="info"></p>
+<dl id="info" style="height: 100px; position:absolute"></dl>
+
   <div
     id="catDiv"
     style=" position:absolute; 
@@ -87,8 +88,7 @@ var angle = d3.scale.ordinal().domain(d3.range(13)).rangePoints([0, 2 * Math.PI]
  521:12
 }
  ;
- var info = d3.select("#info")
-      .text(defaultInfo = "Showing citibike rides from August 2014, to and from the 13 most popular stations");
+ var info = "Showing citibike rides from August 2014, to and from the 13 most popular stations";
 
 var nodes;
 //   {x: 0, y: .1},
@@ -139,7 +139,7 @@ svg.selectAll(".axis")
 d3.csv("cleanbike_short.csv", function(data){
   nodes=data;
   for (index in data){
-    links.push({source:{startstationid: data[index].startstationid, bikeid:data[index].bikeid}, target:{startstationid:data[index].endstationid, bikeid:data[index].bikeid}});
+    links.push({source:{startstationid: data[index].startstationid, bikeid:data[index].bikeid, stationname: data[index].startstationname}, target:{startstationid:data[index].endstationid, bikeid:data[index].bikeid, stationname: data[index].endstationname}});
   };
 
     svg.selectAll(".link")
@@ -191,17 +191,27 @@ svg.selectAll(".endstation")
             })
             .style("stroke", function(dl){
               if (dl.source.bikeid == d.bikeid){
-                if (infoStations.indexOf(dl.source.startstationid) <= -1){
-                  console.log("hi!")
-                  infoStations.push(dl.source.startstationid);}
-                if (infoStations.indexOf(dl.target.startstationid) <= -1){
-                infoStations.push(dl.target.startstationid);
+                if (infoStations.indexOf(dl.source.stationname) <= -1){
+                  infoStations.push(dl.source.stationname);}
+                if (infoStations.indexOf(dl.target.stationname) <= -1){
+                infoStations.push(dl.target.stationname);
               }
               return color(dl.source.bikeid);
             }
 
         });
-        info.text(infoStations.join("\n"));
+        while(document.getElementById("info").firstChild){
+          document.getElementById("info").removeChild(document.getElementById("info").firstChild);
+        }
+        for (index in infoStations){
+          var phrase=infoStations[index];
+          var f = document.createElement("dt");
+          f.innerHTML=phrase;
+          var g=document.getElementById("info");
+          g.appendChild(f);
+
+        }
+
     })
 
 });
